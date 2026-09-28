@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026 안전점검 보고서 장별 검색</title>
+<style>
+:root{--bg:#eef2f1;--panel:#fff;--ink:#17231f;--sub:#57696a;--line:#cfdbd8;--pri:#1f6f5c;--hit:#dff1ec;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1917;--panel:#172522;--ink:#e6efec;--sub:#a0b3af;--line:#2b3e3a;--pri:#6cc3aa;--hit:#1d3630}}
+:root[data-theme="dark"]{--bg:#0f1917;--panel:#172522;--ink:#e6efec;--sub:#a0b3af;--line:#2b3e3a;--pri:#6cc3aa;--hit:#1d3630}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.65}
+.wrap{max-width:960px;margin:0 auto;padding:28px 18px 48px}
+h1{font-size:clamp(23px,4vw,32px);margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:18px;margin:34px 0 10px}
+.lead,.note{color:var(--sub);margin:0}
+.note{font-size:13px;margin-top:8px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.bar input{flex:1 1 260px;min-width:0;padding:11px 14px;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.bar button{padding:11px 16px;font:inherit;background:var(--pri);color:var(--panel);border:0;border-radius:6px;cursor:pointer}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+#count{font-weight:700;margin:12px 0 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-top:5px solid var(--pri);border-radius:6px;padding:14px 16px}
+.no{display:inline-block;font-weight:700;color:var(--pri)}
+.card h3{margin:2px 0 6px;font-size:19px}
+.card p{margin:0 0 8px}
+.sum{color:var(--sub)}
+summary{cursor:pointer;color:var(--pri);font-size:14px}
+.empty{padding:18px;color:var(--sub)}
+.res{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px}
+.res img{width:100%;height:auto;display:block;border-radius:4px}
+.res iframe{width:100%;height:340px;border:0;margin-bottom:12px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>2026 안전점검 보고서 장별 검색</h1>
+<p class="lead">보고서를 장별 카드로 보고, 제목이나 본문의 키워드로 찾아보세요.</p>
+
+<form class="bar" role="search" onsubmit="return false">
+<label for="q" style="position:absolute;left:-9999px">제목 또는 본문 검색</label>
+<input id="q" type="search" placeholder="키워드 (예: 권혁수, 예산, 450건)" autocomplete="off">
+<button type="button" id="reset">전체 보기</button>
+</form>
+<p id="count" aria-live="polite"></p>
+<div class="cards" id="cards"></div>
+<p class="note" id="src"></p>
+
+<h2>5사실 정합성 메트릭스</h2>
+<div class="res" id="res">
+<img src="images/정합성_메트릭스.png" width="1105" height="546" alt="정합성 메트릭스: 총점검건수 450건 3회·440건 1회, 지적사항 120건·115건 각 1회, 시정완료율 85% 2회·82% 1회, 예산집행률 92%·90% 각 1회, 총괄책임자 권혁수 2회·권혁주 1회. 5개 사실 모두 불일치(Y)">
+</div>
+<p class="note">본문에서 값이 두 가지로 기록된 5개 사실입니다. 값 옆 숫자는 본문 등장 횟수입니다.</p>
+</main>
+<script>
+// Google Sheets 임베드: 시트에서 파일 → 공유 → 웹에 게시 → 임베드 → 임베드 코드의 iframe src 값을 아래에 붙여 넣으세요.
+const SHEET_EMBED_URL = "";
+const FALLBACK = [
+ {
+  "장": "1",
+  "제목": "개요",
+  "본문": "본 보고서는 행정안전부 안전정책총괄과가 2026년 상반기 실시한 종합 안전점검 결과를 정리한 자료다.\n\n총 점검 건수는 **450건**이며, 지적사항 **120건** 중 시정 완료율은 **85%**이다. 예산 집행률은 **92%**, 총괄책임자는 **권혁수** 안전정책총괄과장이다."
+ },
+ {
+  "장": "2",
+  "제목": "분야별 결과",
+  "본문": "분야별 점검은 시설안전·교통안전·재난안전·산업안전 4개 분야로 진행됐다. 분야별 총합은 **450건**과 일치한다.\n\n지적사항 **115건** 중 80% 이상이 1분기 내 시정되었으며, 누적 시정 완료율은 **85%**으로 집계됐다. <!-- 모순: 지적사항 오답값 -->"
+ },
+ {
+  "장": "3",
+  "제목": "예산 운용",
+  "본문": "상반기 예산 집행률 **90%**은 전년 동기 대비 5%p 상승한 수치다. <!-- 모순: 예산집행률 오답값 -->\n\n총괄 운영은 **권혁수** 과장이 직접 주재했고, 분기별 점검회의 5회를 개최했다."
+ },
+ {
+  "장": "4",
+  "제목": "향후 계획",
+  "본문": "하반기에는 추가 점검 **440건**을 목표로 추진한다. <!-- 모순: 총점검건수 오답값 -->\n\n상반기 시정 완료율 **82%** 수준에 머문 일부 지자체는 추가 컨설팅 대상으로 지정한다. <!-- 모순: 시정완료율 오답값 -->"
+ },
+ {
+  "장": "5",
+  "제목": "결론",
+  "본문": "행정안전부 안전정책총괄과는 2026년 상반기 동안 **450건**의 안전점검을 차질 없이 완료했다. 총괄 책임은 **권혁주** 과장이 맡았으며, 향후에도 분기별 점검 체계를 강화한다. <!-- 모순: 총괄책임자 오답값 -->"
+ }
+];
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clean = s => s.replace(/<!--[\s\S]*?-->/g, "").replace(/\*\*/g, "").trim();
+let CH = [];
+
+if (SHEET_EMBED_URL) {
+  const f = document.createElement("iframe");
+  f.src = SHEET_EMBED_URL; f.loading = "lazy"; f.title = "정합성 메트릭스 (Google Sheets)";
+  $("res").prepend(f);
+}
+
+function render(){
+  const q = $("q").value.trim().toLowerCase();
+  const rows = CH.filter(c => !q || (c.제목 + "\n" + c.text).toLowerCase().includes(q));
+  $("count").textContent = "결과 " + rows.length + "건";
+  $("cards").innerHTML = rows.length ? rows.map(c => {
+    const first = c.paras[0], sum = first.length > 80 ? first.slice(0, 80) + "…" : first;
+    return '<article class="card"><span class="no">' + esc(c.장) + '장</span><h3>' + esc(c.제목) +
+      '</h3><p class="sum">' + esc(sum) + '</p><details><summary>본문 전체 보기</summary>' +
+      c.paras.map(p => "<p>" + esc(p) + "</p>").join("") + "</details></article>";
+  }).join("") : '<div class="empty">일치하는 장이 없습니다. 제목이나 본문에 있는 단어(예: 예산, 점검)로 검색해 보세요.</div>';
+}
+
+async function load(){
+  let data, src = "장데이터.json";
+  try { const r = await fetch("장데이터.json"); if (!r.ok) throw 0; data = await r.json(); }
+  catch (e) { data = FALLBACK; src = "내장 데이터(장데이터.json과 동일)"; }
+  CH = data.map(a => { const t = clean(a.본문); return {장: a.장, 제목: a.제목, text: t, paras: t.split(/\n{2,}/).map(s => s.trim()).filter(Boolean)}; });
+  $("src").textContent = "데이터: " + src + " · 본문의 HTML 주석과 ** 표기는 제외하고 표시·검색합니다.";
+  render();
+}
+$("q").addEventListener("input", render);
+$("reset").addEventListener("click", () => { $("q").value = ""; render(); });
+load();
+</script>
+</body>
+</html>
